@@ -25,12 +25,19 @@ const products = [
 
 // name-contains-fd&price-=2&quantity->5&description-ends-abc
 // возможны (contains, starts, ends для строковых и <, =, >, <=, >= для числовых)
-const stringModifiers = {
+const FIELDS = {
+    name: 'name',
+    price: 'price',
+    quantity: 'quantity',
+    description: 'description',
+}
+
+const STRING_MODIFIERS = {
     contains: 'contains',
     starts: 'starts',
     ends: 'ends',
 };
-const numberModifiers = {
+const NUMBER_MODIFIERS = {
     less :'<',
     equal: '=',
     greater: '>',
@@ -38,13 +45,18 @@ const numberModifiers = {
     greaterOrEqual: '>=',
 };
 
+const FIELD_SEPARATE = '&';
+const MODIFIER_SEPARATE = '-';
+
+
 function productSearch(filterString, products) {
     const filters = {};
-    filterString.split('&').forEach((fieldFilter) => {
-        const field = fieldFilter.split('-');
-        if (field.includes('price') || field.includes('quantity')) {
-            const modifier = (field[1].includes('>=') || field[1].includes('<=')) ? field[1].slice(0, 2) : field[1].slice(0,1);
-            const value = (field[1].includes('>=') || field[1].includes('<=')) ? field[1].slice(2) : field[1].slice(1);
+    filterString.split(FIELD_SEPARATE).forEach((fieldFilter) => {
+        const field = fieldFilter.split(MODIFIER_SEPARATE);
+        if (field.includes(FIELDS.price) || field.includes(FIELDS.quantity)) {
+            const isLongModifier = (field[1].includes(NUMBER_MODIFIERS.greaterOrEqual) || field[1].includes(NUMBER_MODIFIERS.lessOrEqual))
+            const modifier = isLongModifier ? field[1].slice(0, 2) : field[1].slice(0,1);
+            const value = isLongModifier ? field[1].slice(2) : field[1].slice(1);
             filters[field[0]] = {
                 modifier,
                 value
@@ -58,51 +70,50 @@ function productSearch(filterString, products) {
     })
 
     let result = [...products];
-
     if (filters.name) {
-        if (filters.name.modifier === stringModifiers.contains) {
+        if (filters.name.modifier === STRING_MODIFIERS.contains) {
             result = result.filter((product) => product.name.includes(filters.name.value));
-        } else if (filters.name.modifier === stringModifiers.starts) {
+        } else if (filters.name.modifier === STRING_MODIFIERS.starts) {
             result = result.filter((product) => product.name.startsWith(filters.name.value));
-        } else if (filters.name.modifier === stringModifiers.ends) {
+        } else if (filters.name.modifier === STRING_MODIFIERS.ends) {
             result = result.filter((product) => product.name.endsWith(filters.name.value));
         }
     }
 
     if (filters.description) {
-        if (filters.description.modifier === stringModifiers.contains) {
+        if (filters.description.modifier === STRING_MODIFIERS.contains) {
             result = result.filter((product) => product.description.includes(filters.description.value));
-        } else if (filters.description.modifier === stringModifiers.starts) {
+        } else if (filters.description.modifier === STRING_MODIFIERS.starts) {
             result = result.filter((product) => product.description.startsWith(filters.description.value));
-        } else if (filters.description.modifier === stringModifiers.ends) {
+        } else if (filters.description.modifier === STRING_MODIFIERS.ends) {
             result = result.filter((product) => product.description.endsWith(filters.description.value));
         }
     }
 
     if (filters.price) {
-        if (filters.price.modifier === numberModifiers.less) {
+        if (filters.price.modifier === NUMBER_MODIFIERS.less) {
             result = result.filter((product) => (product.price < filters.price.value));
-        } else if (filters.price.modifier === numberModifiers.greater) {
+        } else if (filters.price.modifier === NUMBER_MODIFIERS.greater) {
             result = result.filter((product) => (product.price > filters.price.value));
-        } else if (filters.price.modifier === numberModifiers.equal) {
+        } else if (filters.price.modifier === NUMBER_MODIFIERS.equal) {
             result = result.filter((product) => (product.price === filters.price.value));
-        } else if (filters.price.modifier === numberModifiers.lessOrEqual) {
+        } else if (filters.price.modifier === NUMBER_MODIFIERS.lessOrEqual) {
             result = result.filter((product) => (product.price <= filters.price.value));
-        } else if (filters.price.modifier === numberModifiers.greaterOrEqual) {
+        } else if (filters.price.modifier === NUMBER_MODIFIERS.greaterOrEqual) {
             result = result.filter((product) => (product.price >= filters.price.value));
         }
     }
 
     if (filters.quantity) {
-        if (filters.quantity.modifier === numberModifiers.less) {
+        if (filters.quantity.modifier === NUMBER_MODIFIERS.less) {
             result = result.filter((product) => (product.quantity < filters.quantity.value));
-        } else if (filters.quantity.modifier === numberModifiers.greater) {
+        } else if (filters.quantity.modifier === NUMBER_MODIFIERS.greater) {
             result = result.filter((product) => (product.quantity > filters.quantity.value));
-        } else if (filters.quantity.modifier === numberModifiers.equal) {
+        } else if (filters.quantity.modifier === NUMBER_MODIFIERS.equal) {
             result = result.filter((product) => (product.quantity === filters.quantity.value));
-        } else if (filters.quantity.modifier === numberModifiers.lessOrEqual) {
+        } else if (filters.quantity.modifier === NUMBER_MODIFIERS.lessOrEqual) {
             result = result.filter((product) => (product.quantity <= filters.quantity.value));
-        } else if (filters.quantity.modifier === numberModifiers.greaterOrEqual) {
+        } else if (filters.quantity.modifier === NUMBER_MODIFIERS.greaterOrEqual) {
             result = result.filter((product) => (product.quantity >= filters.quantity.value));
         }
     }
@@ -110,8 +121,8 @@ function productSearch(filterString, products) {
     return result
 }
 
-// console.log('Test 1:');
-// console.log(productSearch('name-ends-Pro&quantity-<50&description-contains-Mac&price->=120000', products));
+console.log('Test 1:');
+console.log(productSearch('name-ends-Pro&quantity-<=50&description-contains-Mac&price->=100000', products));
 // console.log('Test 2:');
 // console.log(productSearch('name-ends-Pro', products));
 // console.log('Test 3:');
