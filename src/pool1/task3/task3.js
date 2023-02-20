@@ -121,8 +121,8 @@ function productSearch(filterString, products) {
     return result
 }
 
-console.log('Test 1:');
-console.log(productSearch('name-ends-Pro&quantity-<=50&description-contains-Mac&price->=100000', products));
+// console.log('Test 1:');
+// console.log(productSearch('name-ends-Pro&quantity-<=50&description-contains-Mac&price->=100000', products));
 // console.log('Test 2:');
 // console.log(productSearch('name-ends-Pro', products));
 // console.log('Test 3:');
