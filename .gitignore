@@ -1,2 +1,3 @@
-node_modules
 .gitignore
+step1/node_modules
+step2/node_modules
