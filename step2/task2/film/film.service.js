@@ -3,14 +3,23 @@ const genreService = require('../genre/genre.service');
 
 class FilmService {
     async getAll() {
-        const films = await db.query('SELECT * FROM film');
+        const films = await db.query(`
+            SELECT film.film_id, film.title, film.year, json_agg(g.name) as genres 
+            FROM 
+                film INNER JOIN film_genre fg on film.film_id = fg.film_id
+                    INNER JOIN genre g on g.genre_id = fg.genre_id
+            GROUP BY film.film_id`);
         return films.rows;
     }
 
     async getById(id) {
-        const film = await db.query('SELECT * FROM film WHERE film_id = $1', [id]);
-        const genres = await genreService.getByFilmId(id);
-        film.rows[0].genres = genres.map(genre => genre.name);
+        const film = await db.query(`
+            SELECT film.film_id, film.title, film.year, json_agg(g.name) as genres 
+            FROM 
+                film INNER JOIN film_genre fg on film.film_id = fg.film_id
+                    INNER JOIN genre g on g.genre_id = fg.genre_id
+            WHERE film.film_id = $1
+            GROUP BY film.film_id`, [id]);
         return film.rows[0];
     }
 
